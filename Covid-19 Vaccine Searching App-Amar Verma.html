@@ -39,13 +39,13 @@ Login to Cowin Site to book slot</a>
 <h4 id="error" style="color:red;text-align: center;"></h4>
 <br>
 </div>
-<table id="slotsTable" style="display: none; width:600px; color:red;" border="1">
+<table id="slotsTable" style="display: none; width:600px; color:#0000A0;" border="1">
 	<tr>
 		<th style="width:50px;">Age</th>
 		<th style="width:100px;">Date</th>
 		<th style="width:100px;">Available Slot</th>
 		<th style="width:100px;">Vaccine Name</th>
-		<th style="width:220px;">Hospital Name</th>
+		<th style="width:250px;">Hospital Name</th>
 	</tr>
 </table>
 <audio id="slotAlarm">
@@ -142,8 +142,8 @@ Login to Cowin Site to book slot</a>
 		var slotsFlag = false;
 		for(i in allCenters) {
 			
-			var sessions = allCenters[i].sessions;
-			var hospitalName = allCenters[i].name;
+			var sessions = allCenters[i].sessions.reverse();
+			var hospitalName = allCenters[i].name + "<br>Pincode: "+allCenters[i].pincode;
 			
 			for(j in sessions) {
 				var availableSlots = sessions[j].available_capacity;
@@ -182,10 +182,10 @@ Login to Cowin Site to book slot</a>
 		}
 		
 		if(slotsFlag){
-			document.getElementById('error').innerHTML = "All Vaccination Centers are full.... Still Searching!";
+			document.getElementById('error').innerHTML = "All slots are full... will notify you once available!";
 		}
 		else {
-			document.getElementById('error').innerHTML = "No Vaccination Center is available for booking.... Still Searching!";
+			document.getElementById('error').innerHTML = "No Vaccination Center is available for booking... will notify you once available!";
 		}
 		
 		if(isAvailable){
