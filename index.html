@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<link rel="shortcut icon" type="image/x-icon" href="corona-vaccine-icon.png" />
+	<title>
+        Covid-19 Vaccine Slots Searching App
+    </title>
+</head>
+<body>
+
+<div style="width:600px;height:auto;border:3px ridge #B2BABB;padding: 0px 5px 5px 5px;background-color:#EFEFFB">
+<h1 style="margin-bottom: 0px;margin-top: 0px; text-align: center; color:#585858;text-shadow: 2px 2px #F7BE81;">Covid-19 Vaccine Slots Searching App</h1>
+<p style="margin-top: 5px;">This App will only notify you of an open slot. You have to login immediately 
+and book a slot on the government's CoWIN portal or Aarogya Setu app to get the vaccine dose.
+<br><a id="cowinLink1" href="https://selfregistration.cowin.gov.in/appointment" target="_blank" style="color:blue;">
+Login to CoWIN portal to book slot</a></p>
+
+<table>
+	<tr>
+		<td><input id="stateSelectRadio" onchange="toggleSearchType(this)" type="radio" name="searchType" value="stateSelectRadio" style="margin: 0px 2px 0px 0px;" checked>
+		<label><b>Select State:</b></label></td>
+		<td><select id="stateSelect" onchange="populateDistrict(this)">
+				<option value="" style="text-align-last:center;">-- Select --</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td><label style="margin-left: 19px;"><b>Select District:</b></label></td>
+		<td><select id="distSelect">
+				<option value="">-- Select --</option>
+			</select>
+		</td>
+	</tr>
+	<tr>
+		<td><input id="pinSelectRadio" onchange="toggleSearchType(this)" type="radio" name="searchType" value="pinSelectRadio" style="margin: 0px 2px 0px 0px;">
+		<label><b>Enter your PIN:</b></label></td>
+		<td><input id="pinSelect" type="text" disabled>
+		</td>
+	</tr>
+	<tr>
+		<td><label><b>Select Age Group:</b></label></td>
+		<td><select id="ageSelect">
+			<option value="44">18-44</option>
+			<option value="45">45+</option>
+		</select></td>
+	</tr>
+	<tr>
+		<td><label for="slotDate"><b>Slot Date:</b></label></td>
+		<td><input type="date" id="slotDate" name="slotDate"></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td><button type="button" onClick="startInterval(searchSlot, 2000)" style="background-color: #008CBA;cursor: pointer;color: white;border: none;font-size: 14px;width:100px;Height:25px">Search Slot</button>
+	</td>
+	</tr>
+</table>
+
+<h2 id="searchSection" style="text-align: center;"></h2>
+<img id="loader" src="loader.gif" style="display: none;width:60px;height:60px;margin: 0 auto;"/>
+<h4 id="error" style="color:red;text-align: center;"></h4>
+<table id="slotsTable" style="display: none; width:600px; color:#0000A0;" border="1">
+	<tr>
+		<th style="width:50px;">Age</th>
+		<th style="width:100px;">Date</th>
+		<th style="width:100px;">Available Slot</th>
+		<th style="width:100px;">Vaccine Name</th>
+		<th style="width:250px;">Hospital Name</th>
+	</tr>
+</table>
+<audio id="slotAlarm">
+  <source src="chimes-glass.mp3" type="audio/mpeg">
+</audio>
+<p style="margin-top:5px;margin-bottom:0px;color:#B40404;">Developed by - Amar Verma</p>
+</div>
+
+<script> 
+	document.getElementById("slotDate").defaultValue = getTodayDate();	
+	fetchStates();
+	function fetchStates() {
+		var url = "https://cdn-api.co-vin.in/api/v2/admin/location/states";
+		var xmlHttp = new XMLHttpRequest();
+		xmlHttp.open( "GET", url, false ); 
+		xmlHttp.send( null );
+		var statesJson = JSON.parse(xmlHttp.responseText);
+		var allStates = statesJson.states;
+		var element = document.getElementById('stateSelect');
+		removeOptions(element);
+		element.innerHTML = '<option value="">' + "-- Select --" + '</option>';
+		for (var i = 0; i < allStates.length; i++) {
+            element.innerHTML = element.innerHTML +
+                '<option value="' + allStates[i]['state_id'] + '">' + allStates[i]['state_name'] + '</option>';
+        }
+	}
+	
+	function populateDistrict(stateElement){
+		var url = "https://cdn-api.co-vin.in/api/v2/admin/location/districts/"+stateElement.value;
+		var xmlHttp = new XMLHttpRequest();
+		xmlHttp.open( "GET", url, false ); 
+		xmlHttp.send( null );
+		var districtsJson = JSON.parse(xmlHttp.responseText);
+		var allDistricts = districtsJson.districts;
+		var element = document.getElementById('distSelect');
+		removeOptions(element);
+		element.innerHTML = '<option value="">' + "-- Select --" + '</option>';
+		for (var i = 0; i < allDistricts.length; i++) {
+            element.innerHTML = element.innerHTML +
+                '<option value="' + allDistricts[i]['district_id'] + '">' + allDistricts[i]['district_name'] + '</option>';
+        }
+	}
+	
+	function removeOptions(selectElement){
+		while (selectElement.options.length > 0) {                
+			selectElement.remove(0);
+		}        
+	}
+
+	function getSlots(theUrl){	
+		try {
+			var xmlHttp = new XMLHttpRequest();
+			xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
+			xmlHttp.send( null );
+			var data = xmlHttp.responseText;
+		}
+		catch(err) {
+			document.getElementById("error").innerHTML = err.message;
+			console.log(err.message);
+			return;
+		}
+		return data;
+	}
+	
+	function getTodayDate() {
+		var today = new Date();
+		var dd = today.getDate();
+		var mm = today.getMonth()+1; 
+		var yyyy = today.getFullYear();
+		if(dd<10) 
+		{
+			dd='0'+dd;
+		} 
+
+		if(mm<10) 
+		{
+			mm='0'+mm;
+		} 
+		today = yyyy+'-'+mm+'-'+dd;
+		return today;
+	}
+	
+	function getDate(){
+		var date = document.getElementById("slotDate").value.split("-");
+		return date[2]+'-'+date[1]+'-'+date[0];
+	}
+	
+	function findAvailSlots(allCenters, tableId, linkId) {
+		var table = document.getElementById(tableId);	
+		var rowCount = table.rows.length;
+		var isAvailable = false;
+		
+		for (var i = 1; i < rowCount; i++) {
+			table.deleteRow(1);
+		}
+		var slotsFlag = false;
+		for(i in allCenters) {
+			
+			var sessions = allCenters[i].sessions.reverse();
+			var hospitalName = allCenters[i].name + "<br>Pincode: "+allCenters[i].pincode;
+			
+			for(j in sessions) {
+				var availableSlots = sessions[j].available_capacity;
+				var vaccine = sessions[j].vaccine;
+				var date = sessions[j].date;
+				var minAge = sessions[j].min_age_limit;
+				var element = document.getElementById('ageSelect');
+				var searchFlag = false;
+				
+				if(element.value < 45 && minAge < 45) {
+					searchFlag = true;
+					slotsFlag = true;
+				} 
+				if(element.value >= 45 && minAge >= 45) {
+					searchFlag = true;
+					slotsFlag = true;
+				}
+
+				if(searchFlag && availableSlots > 0){ 
+					isAvailable = true;
+					var row = table.insertRow(1);
+					var ageCell = row.insertCell(0);
+					var dateCell = row.insertCell(1);
+					var slotCell = row.insertCell(2);
+					var vaccineCell = row.insertCell(3);
+					var hospitalCell = row.insertCell(4);
+					
+					slotCell.innerHTML = availableSlots;
+					vaccineCell.innerHTML = vaccine;
+					dateCell.innerHTML = date;
+					ageCell.innerHTML = minAge;
+					hospitalCell.innerHTML = hospitalName;
+				}
+					
+			}	
+		}
+		
+		if(slotsFlag){
+			document.getElementById('error').innerHTML = "All slots are full... will notify you once slots are available!";
+		}
+		else {
+			document.getElementById('error').innerHTML = "No Vaccination Center is available for booking... will notify you once slots are available!";
+		}
+		
+		if(isAvailable){
+			document.getElementById('error').innerHTML = null;
+			document.getElementById("slotsTable").style.display = "block"; 
+			document.getElementById("slotAlarm").play(); 
+		} else {
+			document.getElementById("slotsTable").style.display = "none"; 
+		}
+	}
+
+	function searchSlot() {
+		var distElement = document.getElementById('distSelect');
+		var pinElement = document.getElementById('pinSelect');
+		document.getElementById('searchSection').innerHTML = getLocationText(distElement, pinElement);
+		document.getElementById("loader").style.display = "block"; 
+		var url = getUrl(distElement, pinElement);
+		var response = validateJSON(getSlots(url));	
+		if(response !== false) {
+			//console.log("Successfully received the data!");
+			findAvailSlots(response.centers, "slotsTable");
+		}	
+	}
+	
+	function getUrl(distElement, pinElement){
+		var url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/";   		
+		if(document.getElementById("stateSelectRadio").checked){
+			url = url+"calendarByDistrict?district_id="+distElement.value+"&date="+getDate();
+		} else {
+			url = url+"calendarByPin?pincode="+pinElement.value+"&date="+getDate();
+		}
+		return url;
+	}
+	
+	function getLocationText(distElement, pinElement){
+		if(document.getElementById("stateSelectRadio").checked && distElement.value != ""){
+			return "Seaching Slots for "+distElement.options[distElement.selectedIndex].text;
+		} else if(document.getElementById("pinSelectRadio").checked && pinElement.value != "") {
+			return "Seaching Slots for PIN: "+pinElement.value;
+		} else {
+			return null;
+		}
+	}
+	
+	function validateJSON(text) {
+        if (typeof text !== "string") {
+            return false;
+        }
+        try {
+            var jsonData = JSON.parse(text);
+            return jsonData;
+        } catch (error) {
+			document.getElementById("error").innerHTML = text;			
+			document.getElementById("slotsTable").style.display = "none";	
+			console.log(text+" --- "+error.message);
+            return false;
+        }
+    }
+		
+	function startInterval(functionName, milliSec) {
+	  functionName();
+	  return setInterval(functionName, milliSec);
+	}
+	
+	function toggleSearchType(element) {
+		if(element.value === "stateSelectRadio") {
+			document.getElementById("stateSelect").disabled = false; 	
+			document.getElementById("distSelect").disabled = false; 	
+			document.getElementById("pinSelect").disabled = true; 
+			document.getElementById("pinSelect").value = "";
+			var element = document.getElementById('distSelect');
+			removeOptions(element);
+			element.innerHTML = '<option value="">' + "-- Select --" + '</option>';			
+		} else {
+			document.getElementById("pinSelect").disabled = false; 	
+			document.getElementById("stateSelect").disabled = true; 	
+			document.getElementById("distSelect").disabled = true; 
+			document.getElementById("stateSelect").value = ""; 	
+			document.getElementById("distSelect").value = ""; 			
+		}
+	}
+</script>
+</body>
+</html>
