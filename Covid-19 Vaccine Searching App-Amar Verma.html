@@ -7,38 +7,49 @@
     </title>
 </head>
 <body>
-<div style="width:550px;height:auto;">
-<h1 style="margin-bottom: 0px;">Covid-19 Vaccine Slots Searching App</h1>
-<p style="margin-top: 0px;">Developed by - Amar Verma</p>
-<a id="cowinLink1" href="https://selfregistration.cowin.gov.in/appointment" target="_blank" style="color:blue;">
-Login to Cowin Site to book slot</a>
-<br>
-<br>
-<label><b>Select State:</b></label>
-<select id="stateSelect" onchange="populateDistrict(this)">
+
+<div style="width:600px;height:auto;border:3px ridge #B2BABB;padding: 0px 5px 5px 5px;">
+<h1 style="margin-bottom: 0px;margin-top: 0px;">Covid-19 Vaccine Slots Searching App</h1>
+<p style="margin-top:0px;margin-bottom:6px;color:#D35400;"><u>Developed by - Amar Verma</u></p>
+<p style="margin-top: 5px;">This App only will notify you of an open slot. You have to login immediately 
+and book a slot on the government's CoWIN portal or Aarogya Setu app to get the vaccine dose.
+<br><a id="cowinLink1" href="https://selfregistration.cowin.gov.in/appointment" target="_blank" style="color:blue;">
+Login to CoWIN portal to book slot</a></p>
+
+<table>
+	<tr>
+		<td><label><b>Select State:</b></label></td>
+		<td><select id="stateSelect" onchange="populateDistrict(this)">
         <option value="" style="text-align-last:center;">-- Select --</option>
-</select>
-&nbsp;&nbsp;<label><b>Select District:</b></label>
-<select id="distSelect">
+		</select></td>
+	</tr>
+	<tr>
+		<td><label><b>Select District:</b></label></td>
+		<td><select id="distSelect">
         <option value="">-- Select --</option>
-</select>
-<br>
-<br>
-<label><b>Select Age Group:</b></label>
-<select id="ageSelect">
-        <option value="44">45 less</option>
-		<option value="45">45 above</option>
-</select>
-&nbsp;&nbsp;<label for="slotDate"><b>Slot Date:</b></label> 
-<input type="date" id="slotDate" name="slotDate">
-&nbsp;&nbsp;<button type="button" onClick="startInterval(searchSlot, 3000)" style="background-color: #008CBA;cursor: pointer;color: white;border: none;font-size: 14px;width:100px;Height:25px">Search Slot</button>
-<br>
+		</select></td>
+	</tr>
+		<tr>
+		<td><label><b>Select Age Group:</b></label></td>
+		<td><select id="ageSelect">
+        <option value="44">18-44</option>
+		<option value="45">45+</option>
+		</select></td>
+	</tr>
+	<tr>
+		<td><label for="slotDate"><b>Slot Date:</b></label></td>
+		<td><input type="date" id="slotDate" name="slotDate"></td>
+	</tr>
+	<tr>
+		<td></td>
+		<td><button type="button" onClick="startInterval(searchSlot, 3000)" style="background-color: #008CBA;cursor: pointer;color: white;border: none;font-size: 14px;width:100px;Height:25px">Search Slot</button>
+	</td>
+	</tr>
+</table>
 
 <h2 id="searchSection" style="text-align: center;"></h2>
 <img id="loader" src="loader.gif" style="display: none;width:60px;height:60px;margin: 0 auto;"/>
 <h4 id="error" style="color:red;text-align: center;"></h4>
-<br>
-</div>
 <table id="slotsTable" style="display: none; width:600px; color:#0000A0;" border="1">
 	<tr>
 		<th style="width:50px;">Age</th>
@@ -51,6 +62,7 @@ Login to Cowin Site to book slot</a>
 <audio id="slotAlarm">
   <source src="chimes-glass.mp3" type="audio/mpeg">
 </audio>
+</div>
 
 <script> 
 	document.getElementById("slotDate").defaultValue = getTodayDate();	
@@ -182,10 +194,10 @@ Login to Cowin Site to book slot</a>
 		}
 		
 		if(slotsFlag){
-			document.getElementById('error').innerHTML = "All slots are full... will notify you once available!";
+			document.getElementById('error').innerHTML = "All slots are full... will notify you once slots are available!";
 		}
 		else {
-			document.getElementById('error').innerHTML = "No Vaccination Center is available for booking... will notify you once available!";
+			document.getElementById('error').innerHTML = "No Vaccination Center is available for booking... will notify you once slots are available!";
 		}
 		
 		if(isAvailable){
