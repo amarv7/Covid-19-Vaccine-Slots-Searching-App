@@ -257,9 +257,9 @@ Login to CoWIN portal to book slot</a></p>
 	
 	function getLocationText(distElement, pinElement){
 		if(document.getElementById("stateSelectRadio").checked && distElement.value != ""){
-			return "Seaching Slots for "+distElement.options[distElement.selectedIndex].text;
+			return "Searching Slots for "+distElement.options[distElement.selectedIndex].text;
 		} else if(document.getElementById("pinSelectRadio").checked && pinElement.value != "") {
-			return "Seaching Slots for PIN: "+pinElement.value;
+			return "Searching Slots for PIN: "+pinElement.value;
 		} else {
 			return null;
 		}
