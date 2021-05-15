@@ -138,7 +138,7 @@ Login to CoWIN portal to book slot</a></p>
 				}
 			}			
 			xmlHttp.open( "GET", theUrl, true );
-			xmlHttp.send();
+			xmlHttp.send( null );
 		}
 		catch(err) {
 			document.getElementById("error").innerHTML = err.message;
