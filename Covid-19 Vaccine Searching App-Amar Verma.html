@@ -117,16 +117,28 @@ Login to CoWIN portal to book slot</a></p>
 	function getSlots(theUrl){	
 		try {
 			var xmlHttp = new XMLHttpRequest();
-			xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
-			xmlHttp.send( null );
-			var data = xmlHttp.responseText;
+			xmlHttp.onreadystatechange = function() { 
+				if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+					var response = validateJSON(xmlHttp.responseText);	
+					if(response !== false) {
+						//console.log("Successfully received the data!");
+						findAvailSlots(response.centers, "slotsTable");
+					}
+				} 				
+				if(xmlHttp.status == 401 && xmlHttp.responseText.length > 0){
+					document.getElementById("error").innerHTML = xmlHttp.responseText;			
+					document.getElementById("slotsTable").style.display = "none";	
+					console.log(xmlHttp.responseText);
+				}
+			}			
+			xmlHttp.open( "GET", theUrl, true ); // false for synchronous request
+			xmlHttp.send();
 		}
 		catch(err) {
 			document.getElementById("error").innerHTML = err.message;
 			console.log(err.message);
 			return;
 		}
-		return data;
 	}
 	
 	function getTodayDate() {
@@ -224,11 +236,7 @@ Login to CoWIN portal to book slot</a></p>
 		document.getElementById('searchSection').innerHTML = getLocationText(distElement, pinElement);
 		document.getElementById("loader").style.display = "block"; 
 		var url = getUrl(distElement, pinElement);
-		var response = validateJSON(getSlots(url));	
-		if(response !== false) {
-			//console.log("Successfully received the data!");
-			findAvailSlots(response.centers, "slotsTable");
-		}	
+		getSlots(url);	
 	}
 	
 	function getUrl(distElement, pinElement){
