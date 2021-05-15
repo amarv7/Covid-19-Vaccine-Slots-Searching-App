@@ -1,5 +1,5 @@
 # Covid-Vaccine-Slots-Finder
-Covid Vaccine Slots Finder App is the Javascript based application which continously search the Covid Vaccine Slots available in particular district. It will buzz the notification sound on slots availability. 
+Covid Vaccine Slots Finder App is the Javascript based application which continuously search the Covid Vaccine Slots available in particular district. It will buzz the notification sound on slots availability. 
 
 ## Steps:
 1. Download all the files below and keep it in a separate folder :- 
