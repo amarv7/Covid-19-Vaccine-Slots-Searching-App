@@ -1,8 +1,7 @@
-# Covid-19-Vaccine-Slots-Searching-App
-Covid-19 Vaccine Slots Searching App is the Javascript based application which can search the Covid Vaccine Slots available in particular State and district. It will buzz the notification sound on slots availability. 
+# Covid-Vaccine-Slots-Finder
+Covid Vaccine Slots Finder App is the Javascript based application which continously search the Covid Vaccine Slots available in particular district. It will buzz the notification sound on slots availability. 
 
 ## Steps:
-
 1. Download all the files below and keep it in a separate folder :- 
 	1. index.html
 	2. loader.gif
