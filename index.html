@@ -79,33 +79,41 @@ Login to CoWIN portal to book slot</a></p>
 	function fetchStates() {
 		var url = "https://cdn-api.co-vin.in/api/v2/admin/location/states";
 		var xmlHttp = new XMLHttpRequest();
-		xmlHttp.open( "GET", url, false ); 
+		xmlHttp.onreadystatechange = function() { 
+			if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+				var statesJson = JSON.parse(xmlHttp.responseText);
+				var allStates = statesJson.states;
+				var element = document.getElementById('stateSelect');
+				removeOptions(element);
+				element.innerHTML = '<option value="">' + "-- Select --" + '</option>';
+				for (var i = 0; i < allStates.length; i++) {
+					element.innerHTML = element.innerHTML +
+						'<option value="' + allStates[i]['state_id'] + '">' + allStates[i]['state_name'] + '</option>';
+				}
+			} 				
+		}	
+		xmlHttp.open( "GET", url, true ); 
 		xmlHttp.send( null );
-		var statesJson = JSON.parse(xmlHttp.responseText);
-		var allStates = statesJson.states;
-		var element = document.getElementById('stateSelect');
-		removeOptions(element);
-		element.innerHTML = '<option value="">' + "-- Select --" + '</option>';
-		for (var i = 0; i < allStates.length; i++) {
-            element.innerHTML = element.innerHTML +
-                '<option value="' + allStates[i]['state_id'] + '">' + allStates[i]['state_name'] + '</option>';
-        }
 	}
 	
 	function populateDistrict(stateElement){
 		var url = "https://cdn-api.co-vin.in/api/v2/admin/location/districts/"+stateElement.value;
 		var xmlHttp = new XMLHttpRequest();
-		xmlHttp.open( "GET", url, false ); 
+		xmlHttp.onreadystatechange = function() { 
+			if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+				var districtsJson = JSON.parse(xmlHttp.responseText);
+				var allDistricts = districtsJson.districts;
+				var element = document.getElementById('distSelect');
+				removeOptions(element);
+				element.innerHTML = '<option value="">' + "-- Select --" + '</option>';
+				for (var i = 0; i < allDistricts.length; i++) {
+					element.innerHTML = element.innerHTML +
+						'<option value="' + allDistricts[i]['district_id'] + '">' + allDistricts[i]['district_name'] + '</option>';
+				}
+			} 				
+		}	
+		xmlHttp.open( "GET", url, true ); 
 		xmlHttp.send( null );
-		var districtsJson = JSON.parse(xmlHttp.responseText);
-		var allDistricts = districtsJson.districts;
-		var element = document.getElementById('distSelect');
-		removeOptions(element);
-		element.innerHTML = '<option value="">' + "-- Select --" + '</option>';
-		for (var i = 0; i < allDistricts.length; i++) {
-            element.innerHTML = element.innerHTML +
-                '<option value="' + allDistricts[i]['district_id'] + '">' + allDistricts[i]['district_name'] + '</option>';
-        }
 	}
 	
 	function removeOptions(selectElement){
@@ -117,16 +125,28 @@ Login to CoWIN portal to book slot</a></p>
 	function getSlots(theUrl){	
 		try {
 			var xmlHttp = new XMLHttpRequest();
-			xmlHttp.open( "GET", theUrl, false ); // false for synchronous request
-			xmlHttp.send( null );
-			var data = xmlHttp.responseText;
+			xmlHttp.onreadystatechange = function() { 
+				if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
+					var response = validateJSON(xmlHttp.responseText);	
+					if(response !== false) {
+						//console.log("Successfully received the data!");
+						findAvailSlots(response.centers, "slotsTable");
+					}
+				} 				
+				if(xmlHttp.status == 401 && xmlHttp.responseText.length > 0){
+					document.getElementById("error").innerHTML = xmlHttp.responseText;			
+					document.getElementById("slotsTable").style.display = "none";	
+					console.log(xmlHttp.responseText);
+				}
+			}			
+			xmlHttp.open( "GET", theUrl, true ); // false for synchronous request
+			xmlHttp.send();
 		}
 		catch(err) {
 			document.getElementById("error").innerHTML = err.message;
 			console.log(err.message);
 			return;
 		}
-		return data;
 	}
 	
 	function getTodayDate() {
@@ -224,11 +244,7 @@ Login to CoWIN portal to book slot</a></p>
 		document.getElementById('searchSection').innerHTML = getLocationText(distElement, pinElement);
 		document.getElementById("loader").style.display = "block"; 
 		var url = getUrl(distElement, pinElement);
-		var response = validateJSON(getSlots(url));	
-		if(response !== false) {
-			//console.log("Successfully received the data!");
-			findAvailSlots(response.centers, "slotsTable");
-		}	
+		getSlots(url);	
 	}
 	
 	function getUrl(distElement, pinElement){
