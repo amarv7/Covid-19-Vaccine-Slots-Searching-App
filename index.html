@@ -3,13 +3,31 @@
 <head>
 	<link rel="shortcut icon" type="image/x-icon" href="corona-vaccine-icon.png" />
 	<title>Covid Vaccine Slots Finder-Amar Verma</title>
+	<style>
+		#slotsTable {		  
+		  border-collapse: collapse;
+		  display: none; 
+		  width:600px; 		  
+		}
+		#slotsTable td, #slotsTable th {
+		  border: 2px solid #F8F9F9;		  
+		}
+		#slotsTable tr:nth-child(even){
+		  background-color: #D1F2EB;
+		}
+		#slotsTable th {
+		  background-color: #008080;
+		  color: #FFFFFF;
+		  height: 25px;
+		}
+	</style>
 </head>
 <body>
 
 <div style="width:600px;height:auto;border:3px ridge #B2BABB;padding: 0px 5px 5px 5px;background-color:#EFEFFB">
 <h1 style="margin-bottom: 0px;margin-top: 0px; text-align: center; color:#585858;text-shadow: 2px 2px #F7BE81;">Covid Vaccine Slots Finder</h1>
-<p style="margin-top: 5px;">This App will only notify you of open slots, once started then it continuously searches the slots. You have to login 
-	and book a slot on the government's CoWIN portal or Aarogya Setu app to get the vaccine dose.
+<p style="margin-top: 5px;">This App will only notify you of an open slot. You have to login immediately 
+and book a slot on the government's CoWIN portal or Aarogya Setu app to get the vaccine dose.
 <br><a id="cowinLink1" href="https://selfregistration.cowin.gov.in/appointment" target="_blank" style="color:blue;">
 Login to CoWIN portal to book slot</a></p>
 
@@ -56,7 +74,7 @@ Login to CoWIN portal to book slot</a></p>
 <h2 id="searchSection" style="text-align: center;"></h2>
 <img id="loader" src="loader.gif" style="display: none;width:60px;height:60px;margin: 0 auto;"/>
 <h4 id="error" style="color:red;text-align: center;"></h4>
-<table id="slotsTable" style="display: none; width:600px; color:#0000A0;" border="1">
+<table id="slotsTable">
 	<tr>
 		<th style="width:50px;">Age</th>
 		<th style="width:100px;">Date</th>
@@ -138,7 +156,7 @@ Login to CoWIN portal to book slot</a></p>
 				}
 			}			
 			xmlHttp.open( "GET", theUrl, true );
-			xmlHttp.send( null );
+			xmlHttp.send();
 		}
 		catch(err) {
 			document.getElementById("error").innerHTML = err.message;
