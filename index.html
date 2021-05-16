@@ -5,51 +5,92 @@
 	<title>Covid Vaccine Slots Finder-Amar Verma</title>
 	<style>
 		#slotsTable {		  
-		  border-collapse: collapse;
-		  display: none; 
-		  width:600px; 		  
+			border-collapse: collapse;
+			display: none; 
+			width:600px; 		  
 		}
 		#slotsTable td, #slotsTable th {
-		  border: 2px solid #F8F9F9;		  
+			border: 2px solid #F8F9F9;		  
 		}
 		#slotsTable tr:nth-child(even){
-		  background-color: #D1F2EB;
+			background-color: #D1F2EB;
 		}
 		#slotsTable th {
-		  background-color: #008080;
-		  color: #FFFFFF;
-		  height: 25px;
+			background-color: #008080;
+			color: #FFFFFF;
+			height: 25px;
 		}
+		.mainDiv {
+			width:600px;
+			height:auto;
+			border:3px ridge #B2BABB;
+			padding: 0px 5px 5px 5px;
+			background-color:#EFEFFB
+		}
+		.mainHeader {
+			margin-bottom: 0px;
+			margin-top: 0px; 
+			text-align: center; 
+			color:#585858;
+			text-shadow: 2px 2px #F7BE81;
+		}
+		.disclaimer {
+			margin-top: 5px;
+		}
+		#cowinLink1 {
+			color:blue;
+		}
+		#stateSelectRadio, #pinSelectRadio {
+			margin: 0px 2px 0px 0px;
+		}
+		.stateOption, .districtOption {
+			text-align-last:center;
+		}
+		.searchBtn {
+			background-color: #008CBA;
+			cursor: pointer;
+			color: white;
+			border: none;
+			font-size: 14px;
+			width:100px;
+			Height:25px
+		}
+		#loader {
+			display: none;
+			width:60px;
+			height:60px;
+			margin: 0 auto;
+		}
+		
 	</style>
 </head>
 <body>
 
-<div style="width:600px;height:auto;border:3px ridge #B2BABB;padding: 0px 5px 5px 5px;background-color:#EFEFFB">
-<h1 style="margin-bottom: 0px;margin-top: 0px; text-align: center; color:#585858;text-shadow: 2px 2px #F7BE81;">Covid Vaccine Slots Finder</h1>
-	<h2 style="text-align: center;">This App is under Maintenance right now, Please visit later</h2>
-<p style="margin-top: 5px;">This App will only notify you of an open slot. You have to login immediately 
+<div class="mainDiv">
+<h1 class="mainHeader">Covid Vaccine Slots Finder</h1>
+<p class="disclaimer">This App will only notify you of an open slot. You have to login immediately 
 and book a slot on the government's CoWIN portal or Aarogya Setu app to get the vaccine dose.
-<br><a id="cowinLink1" href="https://selfregistration.cowin.gov.in/appointment" target="_blank" style="color:blue;">
+<br><a id="cowinLink1" href="https://selfregistration.cowin.gov.in/appointment" target="_blank">
 Login to CoWIN portal to book slot</a></p>
 
 <table>
 	<tr>
-		<td><input id="stateSelectRadio" onchange="toggleSearchType(this)" type="radio" name="searchType" value="stateSelectRadio" style="margin: 0px 2px 0px 0px;" checked>
+		<td><input id="stateSelectRadio" onchange="toggleSearchType(this)" type="radio" name="searchType" value="stateSelectRadio" checked>
 		<label><b>Select State:</b></label></td>
 		<td><select id="stateSelect" onchange="populateDistrict(this)">
-				<option value="" style="text-align-last:center;">-- Select --</option>
+				<option class="stateOption" value="">-- Select --</option>
 			</select>
 		</td>
 	</tr>
 	<tr>
 		<td><label style="margin-left: 19px;"><b>Select District:</b></label></td>
 		<td><select id="distSelect">
-				<option value="">-- Select --</option>
+				<option  class="districtOption" value="">-- Select --</option>
 			</select>
 		</td>
 	</tr>
 	<tr>
-		<td><input id="pinSelectRadio" onchange="toggleSearchType(this)" type="radio" name="searchType" value="pinSelectRadio" style="margin: 0px 2px 0px 0px;">
+		<td><input id="pinSelectRadio" onchange="toggleSearchType(this)" type="radio" name="searchType" value="pinSelectRadio">
 		<label><b>Enter your PIN:</b></label></td>
 		<td><input id="pinSelect" type="text" disabled>
 		</td>
@@ -67,13 +108,13 @@ Login to CoWIN portal to book slot</a></p>
 	</tr>
 	<tr>
 		<td></td>
-		<td><button type="button" onClick="startInterval(searchSlot, 5000)" style="background-color: #008CBA;cursor: pointer;color: white;border: none;font-size: 14px;width:100px;Height:25px" disabled>Search Slot</button>
+		<td><button class="searchBtn" type="button" onClick="startInterval(searchSlot, 2000)">Search Slot</button>
 	</td>
 	</tr>
 </table>
 
 <h2 id="searchSection" style="text-align: center;"></h2>
-<img id="loader" src="loader.gif" style="display: none;width:60px;height:60px;margin: 0 auto;"/>
+<img id="loader" src="loader.gif"/>
 <h4 id="error" style="color:red;text-align: center;"></h4>
 <table id="slotsTable">
 	<tr>
@@ -265,6 +306,7 @@ Login to CoWIN portal to book slot</a></p>
 	}
 	
 	function getUrl(distElement, pinElement){
+				   https://cdn-api.co-vin.in/api/v2/appointment/sessions/calendarByDistrict?district_id=188&date=30-07-2021&vaccine=COVISHIELD
 		var url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/";   		
 		if(document.getElementById("stateSelectRadio").checked){
 			url = url+"calendarByDistrict?district_id="+distElement.value+"&date="+getDate();
