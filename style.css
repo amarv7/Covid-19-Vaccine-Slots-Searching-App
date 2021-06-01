@@ -1,0 +1,72 @@
+		#slotsTable {		  
+			border-collapse: collapse;
+			display: none; 
+			width:600px; 		  
+		}
+		#slotsTable td, #slotsTable th {
+			border: 2px solid #F8F9F9;		  
+		}
+		#slotsTable tr:nth-child(even){
+			background-color: #D1F2EB;
+		}
+		#slotsTable th {
+			background-color: #008080;
+			color: #FFFFFF;
+			height: 25px;
+		}
+		.mainDiv {
+			width:600px;
+			height:auto;
+			border:3px ridge #B2BABB;
+			padding: 0px 5px 5px 5px;
+			background-color:#EFEFFB
+		}
+		.mainHeader {
+			margin-bottom: 0px;
+			margin-top: 0px; 
+			text-align: center; 
+			color:#585858;
+			text-shadow: 2px 2px #F7BE81;
+		}
+		.disclaimer {
+			margin-top: 5px;
+		}
+		#cowinLink1 {
+			color:blue;
+		}
+		#stateSelectRadio, #pinSelectRadio {
+			margin: 0px 2px 0px 0px;
+		}
+		.stateOption, .districtOption {
+			text-align-last:center;
+		}
+		.searchBtn {
+			background-color: #008CBA;
+			cursor: pointer;
+			color: white;
+			border: none;
+			font-size: 14px;
+			width:100px;
+			Height:25px
+		}
+		#loader {
+			display: none;
+			width:60px;
+			height:60px;
+			margin: 0 auto;
+		}
+		.info {
+			margin-top:5px;
+			margin-bottom:0px;
+			color:#B40404;
+		}
+		.districtLevel {
+			margin-left: 19px;
+		}
+		#error {
+			color:red;
+			text-align: center;
+		}
+		#searchSection {
+			text-align: center;
+		}
