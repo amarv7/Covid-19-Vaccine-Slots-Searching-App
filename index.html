@@ -2,67 +2,8 @@
 <html>
 <head>
 	<link rel="shortcut icon" type="image/x-icon" href="corona-vaccine-icon.png" />
+	<link rel="stylesheet" href="style.css">
 	<title>Covid Vaccine Slots Finder-Amar Verma</title>
-	<style>
-		#slotsTable {		  
-			border-collapse: collapse;
-			display: none; 
-			width:600px; 		  
-		}
-		#slotsTable td, #slotsTable th {
-			border: 2px solid #F8F9F9;		  
-		}
-		#slotsTable tr:nth-child(even){
-			background-color: #D1F2EB;
-		}
-		#slotsTable th {
-			background-color: #008080;
-			color: #FFFFFF;
-			height: 25px;
-		}
-		.mainDiv {
-			width:600px;
-			height:auto;
-			border:3px ridge #B2BABB;
-			padding: 0px 5px 5px 5px;
-			background-color:#EFEFFB
-		}
-		.mainHeader {
-			margin-bottom: 0px;
-			margin-top: 0px; 
-			text-align: center; 
-			color:#585858;
-			text-shadow: 2px 2px #F7BE81;
-		}
-		.disclaimer {
-			margin-top: 5px;
-		}
-		#cowinLink1 {
-			color:blue;
-		}
-		#stateSelectRadio, #pinSelectRadio {
-			margin: 0px 2px 0px 0px;
-		}
-		.stateOption, .districtOption {
-			text-align-last:center;
-		}
-		.searchBtn {
-			background-color: #008CBA;
-			cursor: pointer;
-			color: white;
-			border: none;
-			font-size: 14px;
-			width:100px;
-			Height:25px
-		}
-		#loader {
-			display: none;
-			width:60px;
-			height:60px;
-			margin: 0 auto;
-		}
-		
-	</style>
 </head>
 <body>
 
@@ -83,7 +24,7 @@ Login to CoWIN portal to book slot</a></p>
 		</td>
 	</tr>
 	<tr>
-		<td><label style="margin-left: 19px;"><b>Select District:</b></label></td>
+		<td><label class="districtLevel"><b>Select District:</b></label></td>
 		<td><select id="distSelect">
 				<option  class="districtOption" value="">-- Select --</option>
 			</select>
@@ -116,6 +57,7 @@ Login to CoWIN portal to book slot</a></p>
 	<tr>
 		<td><label for="vaccineType"><b>Select Vaccine:</b></label></td>
 		<td><select id="vaccineSelect">
+			<option value="ALL">All</option>
 			<option value="COVAXIN">Covaxin</option>
 			<option value="COVISHIELD">Covishield</option>
 			<option value="sputnik5">Sputnik 5</option>
@@ -128,9 +70,9 @@ Login to CoWIN portal to book slot</a></p>
 	</tr>
 </table>
 
-<h2 id="searchSection" style="text-align: center;"></h2>
+<h2 id="searchSection"></h2>
 <img id="loader" src="loader.gif"/>
-<h4 id="error" style="color:red;text-align: center;"></h4>
+<h4 id="error"></h4>
 <table id="slotsTable">
 	<tr>
 		<th style="width:50px;">Age</th>
@@ -143,7 +85,7 @@ Login to CoWIN portal to book slot</a></p>
 <audio id="slotAlarm">
   <source src="chimes-glass.mp3" type="audio/mpeg">
 </audio>
-<p style="margin-top:5px;margin-bottom:0px;color:#B40404;">Developed by - Amar Verma</p>
+<p class="info">Developed by - Amar Verma <a href="https://www.linkedin.com/in/amarverma7/">(LinkedIn)</a></p>
 </div>
 
 <script> 
@@ -207,7 +149,6 @@ Login to CoWIN portal to book slot</a></p>
 				if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 					var response = validateJSON(xmlHttp.responseText);	
 					if(response !== false) {
-						//console.log("Successfully received the data!");
 						findAvailSlots(response.centers, "slotsTable");
 					}
 				} 				
@@ -221,14 +162,11 @@ Login to CoWIN portal to book slot</a></p>
 			xmlHttp.send(null);
 		}
 		catch(err) {
-			document.getElementById("error").innerHTML = err.message;
 			console.log(err.message);
 			clearInterval(intervalId);
 			document.getElementById("loader").style.display = "none"; 
-			document.getElementById("error").innerHTML = "Request Blocked by Server - Try after sometime";			
+			document.getElementById("error").innerHTML = "Request Blocked by Server - Try after sometime | "+err.message;			
 			document.getElementById("slotsTable").style.display = "none";	
-			console.log(xmlHttp.responseText);
-			return;
 		}
 	}
 	
@@ -256,15 +194,15 @@ Login to CoWIN portal to book slot</a></p>
 	}
 	
 	function findAvailSlots(allCenters, tableId, linkId) {
-		var table = document.getElementById(tableId);
-			
+		var table = document.getElementById(tableId);			
 		var rowCount = table.rows.length;
 		var isAvailable = false;
+		var slotsFlag = false;
 		
 		for (var i = 1; i < rowCount; i++) {
 			table.deleteRow(1);
 		}
-		var slotsFlag = false;
+				
 		for(i in allCenters) {
 			
 			var sessions = allCenters[i].sessions.reverse();
@@ -287,7 +225,7 @@ Login to CoWIN portal to book slot</a></p>
 					slotsFlag = true;
 				}
 				
-				if(searchFlag && availableSlots > 0 && vaccineElement.value === vaccine){ 
+				if(searchFlag && availableSlots > 0 && (vaccineElement.value === vaccine || vaccineElement.value === "ALL")){ 
 					isAvailable = true;
 					var row = table.insertRow(1);
 					var ageCell = row.insertCell(0);
