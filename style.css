@@ -15,6 +15,7 @@
 			height: 25px;
 		}
 		.mainDiv {
+			margin: auto;
 			width:600px;
 			height:auto;
 			border:3px ridge #B2BABB;
