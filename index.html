@@ -149,7 +149,7 @@ Login to CoWIN portal to book slot</a></p>
 				if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 					var response = validateJSON(xmlHttp.responseText);	
 					if(response !== false) {
-						findAvailSlots(response.centers, "slotsTable");
+						findAvailSlots(response.sessions, "slotsTable");
 					}
 				} 				
 				if(xmlHttp.status == 401 && xmlHttp.responseText.length > 0){
@@ -193,7 +193,7 @@ Login to CoWIN portal to book slot</a></p>
 		return date[2]+'-'+date[1]+'-'+date[0];
 	}
 	
-	function findAvailSlots(allCenters, tableId, linkId) {
+	function findAvailSlots(sessions, tableId, linkId) {
 		var table = document.getElementById(tableId);			
 		var rowCount = table.rows.length;
 		var isAvailable = false;
@@ -202,46 +202,41 @@ Login to CoWIN portal to book slot</a></p>
 		for (var i = 1; i < rowCount; i++) {
 			table.deleteRow(1);
 		}
+
+		for(i in sessions) {
+			var hospitalName = sessions[i].name + "<br>Pincode: "+sessions[i].pincode;
+			var availableSlots = sessions[i]["available_capacity"+"_"+doseElement.value];
+			var vaccine = sessions[i].vaccine;
+			var date = sessions[i].date;
+			var minAge = sessions[i].min_age_limit;
 				
-		for(i in allCenters) {
-			
-			var sessions = allCenters[i].sessions.reverse();
-			var hospitalName = allCenters[i].name + "<br>Pincode: "+allCenters[i].pincode;
-			
-			for(j in sessions) {
-				var availableSlots = sessions[j]["available_capacity"+"_"+doseElement.value];
-				var vaccine = sessions[j].vaccine;
-				var date = sessions[j].date;
-				var minAge = sessions[j].min_age_limit;
+			var searchFlag = false;
 				
-				var searchFlag = false;
+			if(ageElement.value < 45 && minAge < 45) {
+				searchFlag = true;
+				slotsFlag = true;
+			} 
+			if(ageElement.value >= 45 && minAge >= 45) {
+				searchFlag = true;
+				slotsFlag = true;
+			}
 				
-				if(ageElement.value < 45 && minAge < 45) {
-					searchFlag = true;
-					slotsFlag = true;
-				} 
-				if(ageElement.value >= 45 && minAge >= 45) {
-					searchFlag = true;
-					slotsFlag = true;
-				}
-				
-				if(searchFlag && availableSlots > 0 && (vaccineElement.value === vaccine || vaccineElement.value === "ALL")){ 
-					isAvailable = true;
-					var row = table.insertRow(1);
-					var ageCell = row.insertCell(0);
-					var dateCell = row.insertCell(1);
-					var slotCell = row.insertCell(2);
-					var vaccineCell = row.insertCell(3);
-					var hospitalCell = row.insertCell(4);
+			if(searchFlag && availableSlots > 0 && (vaccineElement.value === vaccine || vaccineElement.value === "ALL")){ 
+				isAvailable = true;
+				var row = table.insertRow(1);
+				var ageCell = row.insertCell(0);
+				var dateCell = row.insertCell(1);
+				var slotCell = row.insertCell(2);
+				var vaccineCell = row.insertCell(3);
+				var hospitalCell = row.insertCell(4);
 					
-					slotCell.innerHTML = availableSlots;
-					vaccineCell.innerHTML = vaccine;
-					dateCell.innerHTML = date;
-					ageCell.innerHTML = minAge;
-					hospitalCell.innerHTML = hospitalName;
-				}
-					
-			}	
+				slotCell.innerHTML = availableSlots;
+				vaccineCell.innerHTML = vaccine;
+				dateCell.innerHTML = date;
+				ageCell.innerHTML = minAge;
+				hospitalCell.innerHTML = hospitalName;
+			}
+				
 		}
 		
 		if(slotsFlag){
