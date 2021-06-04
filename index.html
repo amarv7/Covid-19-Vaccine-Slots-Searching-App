@@ -3,21 +3,23 @@
 <head>
 	<link rel="shortcut icon" type="image/x-icon" href="corona-vaccine-icon.png" />
 	<link rel="stylesheet" href="style.css">
+	<script src="script.js"></script>
 	<title>Covid Vaccine Slots Finder-Amar Verma</title>
 </head>
 <body>
 
 <div class="mainDiv">
-<h1 class="mainHeader">Covid Vaccine Slots Finder</h1>
+<div class="mainHeader">Covid Vaccine Slots Finder</div>
 <p class="disclaimer">This App will only notify you of available slot. You have to login 
-and book a slot on the government's CoWIN portal or Aarogya Setu app to get the vaccine dose.
-<br><a id="cowinLink1" href="https://selfregistration.cowin.gov.in/appointment" target="_blank">
-Login to CoWIN portal to book slot</a></p>
-
+and book a slot on the government's CoWIN portal or Aarogya Setu app to get the vaccine dose.</p>
+<a href="https://selfregistration.cowin.gov.in/appointment" target="_blank">
+Login to CoWIN portal to book slot</a>
+<br>
+<br>
 <table>
 	<tr>
 		<td><input id="stateSelectRadio" onchange="toggleSearchType(this)" type="radio" name="searchType" value="stateSelectRadio" checked>
-		<label><b>Select State:</b></label></td>
+		<label class="fieldLabel"><b>Select State:</b></label></td>
 		<td><select id="stateSelect" onchange="populateDistrict(this)">
 				<option class="stateOption" value="">-- Select --</option>
 			</select>
@@ -32,30 +34,30 @@ Login to CoWIN portal to book slot</a></p>
 	</tr>
 	<tr>
 		<td><input id="pinSelectRadio" onchange="toggleSearchType(this)" type="radio" name="searchType" value="pinSelectRadio">
-		<label><b>Enter your PIN:</b></label></td>
+		<label class="fieldLabel"><b>Enter your PIN:</b></label></td>
 		<td><input id="pinSelect" type="text" disabled>
 		</td>
 	</tr>
 	<tr>
-		<td><label><b>Select Age Group:</b></label></td>
+		<td><label class="fieldLabel"><b>Select Age Group:</b></label></td>
 		<td><select id="ageSelect">
 			<option value="44">18-44</option>
 			<option value="45">45+</option>
 		</select></td>
 	</tr>
 	<tr>
-		<td><label for="slotDate"><b>Slot Date:</b></label></td>
+		<td><label for="slotDate" class="fieldLabel"><b>Slot Date:</b></label></td>
 		<td><input type="date" id="slotDate" name="slotDate"></td>
 	</tr>
 	<tr>
-		<td><label for="doseType"><b>Select Dose:</b></label></td>
+		<td><label for="doseType" class="fieldLabel"><b>Select Dose:</b></label></td>
 		<td><select id="doseSelect">
 			<option value="dose1">Dose-1</option>
 			<option value="dose2">Dose-2</option>
 		</select></td>
 	</tr>
 	<tr>
-		<td><label for="vaccineType"><b>Select Vaccine:</b></label></td>
+		<td><label for="vaccineType" class="fieldLabel"><b>Select Vaccine:</b></label></td>
 		<td><select id="vaccineSelect">
 			<option value="ALL">All</option>
 			<option value="COVAXIN">Covaxin</option>
@@ -77,15 +79,21 @@ Login to CoWIN portal to book slot</a></p>
 	<tr>
 		<th style="width:50px;">Age</th>
 		<th style="width:100px;">Date</th>
-		<th style="width:100px;">Available Slot</th>
-		<th style="width:100px;">Vaccine Name</th>
-		<th style="width:250px;">Hospital Name</th>
+		<th style="width:120px;">Available Slot</th>
+		<th style="width:120px;">Vaccine Name</th>
+		<th style="width:340px;">Hospital Name</th>
+		<th style="width:60px;">Fee</th>
 	</tr>
 </table>
 <audio id="slotAlarm">
   <source src="chimes-glass.mp3" type="audio/mpeg">
 </audio>
-<p class="info">Developed by - Amar Verma <a href="https://www.linkedin.com/in/amarverma7/">(LinkedIn)</a></p>
+<table class="info">
+	<tr>
+		<td>Developed by - Amar Verma</td>
+		<td><a href="https://www.linkedin.com/in/amarverma7/">(LinkedIn)</a></td>
+	</tr>
+</table> 
 </div>
 
 <script> 
@@ -149,13 +157,15 @@ Login to CoWIN portal to book slot</a></p>
 				if (xmlHttp.readyState == 4 && xmlHttp.status == 200) {
 					var response = validateJSON(xmlHttp.responseText);	
 					if(response !== false) {
-						findAvailSlots(response.sessions, "slotsTable");
+						findAvailSlots(response.centers, "slotsTable");
 					}
 				} 				
-				if(xmlHttp.status == 401 && xmlHttp.responseText.length > 0){
+				if(xmlHttp.status == 401 || xmlHttp.status == 400){
 					document.getElementById("error").innerHTML = xmlHttp.responseText;			
 					document.getElementById("slotsTable").style.display = "none";	
-					console.log(xmlHttp.responseText);
+					var errorMessage = (xmlHttp.responseText.length > 0) ? xmlHttp.responseText : "Couldn't receive response from Server";
+					document.getElementById('error').innerHTML = errorMessage;
+					console.log(errorMessage);
 				}
 			}			
 			xmlHttp.open( "GET", theUrl, false );
@@ -193,50 +203,62 @@ Login to CoWIN portal to book slot</a></p>
 		return date[2]+'-'+date[1]+'-'+date[0];
 	}
 	
-	function findAvailSlots(sessions, tableId, linkId) {
+	function findAvailSlots(allCenters, tableId, linkId) {
 		var table = document.getElementById(tableId);			
 		var rowCount = table.rows.length;
 		var isAvailable = false;
 		var slotsFlag = false;
+		var vaccineCost = "Free";
 		
 		for (var i = 1; i < rowCount; i++) {
 			table.deleteRow(1);
 		}
-
-		for(i in sessions) {
-			var hospitalName = sessions[i].name + "<br>Pincode: "+sessions[i].pincode;
-			var availableSlots = sessions[i]["available_capacity"+"_"+doseElement.value];
-			var vaccine = sessions[i].vaccine;
-			var date = sessions[i].date;
-			var minAge = sessions[i].min_age_limit;
-				
-			var searchFlag = false;
-				
-			if(ageElement.value < 45 && minAge < 45) {
-				searchFlag = true;
-				slotsFlag = true;
-			} 
-			if(ageElement.value >= 45 && minAge >= 45) {
-				searchFlag = true;
-				slotsFlag = true;
-			}
-				
-			if(searchFlag && availableSlots > 0 && (vaccineElement.value === vaccine || vaccineElement.value === "ALL")){ 
-				isAvailable = true;
-				var row = table.insertRow(1);
-				var ageCell = row.insertCell(0);
-				var dateCell = row.insertCell(1);
-				var slotCell = row.insertCell(2);
-				var vaccineCell = row.insertCell(3);
-				var hospitalCell = row.insertCell(4);
+	
+		for(i in allCenters) {
+		
+			var sessions = allCenters[i].sessions.reverse();
+			var hospitalName = allCenters[i].name + "<br>Pincode: "+allCenters[i].pincode;
 					
-				slotCell.innerHTML = availableSlots;
-				vaccineCell.innerHTML = vaccine;
-				dateCell.innerHTML = date;
-				ageCell.innerHTML = minAge;
-				hospitalCell.innerHTML = hospitalName;
+			if(allCenters[i].fee_type === "Paid") { 
+				vaccineCost = allCenters[i].vaccine_fees;
 			}
+						
+			for(j in sessions) {
+				var availableSlots = sessions[j]["available_capacity"+"_"+doseElement.value];
+				var vaccine = sessions[j].vaccine;
+				var date = sessions[j].date;
+				var minAge = sessions[j].min_age_limit;			
+				var searchFlag = false;
 				
+				if(ageElement.value < 45 && minAge < 45) {
+					searchFlag = true;
+					slotsFlag = true;
+				} 
+				if(ageElement.value >= 45 && minAge >= 45) {
+					searchFlag = true;
+					slotsFlag = true;
+				}
+				
+				if(searchFlag && availableSlots > 0 && (vaccineElement.value === vaccine || vaccineElement.value === "ALL")){ 
+					isAvailable = true;
+					var row = table.insertRow(1);
+					var ageCell = row.insertCell(0);
+					var dateCell = row.insertCell(1);
+					var slotCell = row.insertCell(2);
+					var vaccineCell = row.insertCell(3);
+					var hospitalCell = row.insertCell(4);
+					var vaccineFee = row.insertCell(5);
+					
+					slotCell.innerHTML = availableSlots;
+					vaccineCell.innerHTML = vaccine;
+					dateCell.innerHTML = date;
+					ageCell.innerHTML = minAge;
+					hospitalCell.innerHTML = hospitalName;
+					vaccineFee.innerHTML = (vaccineCost === "Free") ? vaccineCost : vaccineCost.find(obj => obj.vaccine === vaccine).fee;
+				}
+			
+			}
+		
 		}
 		
 		if(slotsFlag){
@@ -268,9 +290,9 @@ Login to CoWIN portal to book slot</a></p>
 	function getUrl(distElement, pinElement){
 		var url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/";   		
 		if(document.getElementById("stateSelectRadio").checked){
-			url = url+"findByDistrict?district_id="+distElement.value+"&date="+getDate();
+			url = url+"calendarByDistrict?district_id="+distElement.value+"&date="+getDate();
 		} else {
-			url = url+"findByDistrict?pincode="+pinElement.value+"&date="+getDate();
+			url = url+"calendarByPin?pincode="+pinElement.value+"&date="+getDate();
 		}
 		return url;
 	}
