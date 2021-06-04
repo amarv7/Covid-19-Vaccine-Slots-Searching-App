@@ -1,39 +1,53 @@
 		#slotsTable {		  
 			border-collapse: collapse;
 			display: none; 
-			width:600px; 		  
+			text-align:center;
+			font-weight: bold;
+			color:#FDFEFE;
+			/*width:100%;*/ 		  
 		}
 		#slotsTable td, #slotsTable th {
-			border: 2px solid #F8F9F9;		  
+			border: 2px solid #85929E;		  
+		}
+		#slotsTable tr:nth-child(odd){
+			background-color: #2B3856;
 		}
 		#slotsTable tr:nth-child(even){
-			background-color: #D1F2EB;
+			background-color: #F39C12;
 		}
 		#slotsTable th {
-			background-color: #008080;
+			background-color: #2C2626;
+			font-size: 18px;
 			color: #FFFFFF;
-			height: 25px;
+			height: 35px;
 		}
 		.mainDiv {
 			margin: auto;
-			width:600px;
+			width:800px;
 			height:auto;
 			border:3px ridge #B2BABB;
 			padding: 0px 5px 5px 5px;
-			background-color:#EFEFFB
+			background-color:#34495E; 
+			/*background-color:#EFEFFB*/
+			
 		}
 		.mainHeader {
 			margin-bottom: 0px;
 			margin-top: 0px; 
 			text-align: center; 
-			color:#585858;
-			text-shadow: 2px 2px #F7BE81;
+			color:#FDD017;
+			font-size: 42px;
+			font-weight: bold;
+			/*color:#585858;*/
+			text-shadow: 1.5px 1.5px #999;
 		}
 		.disclaimer {
 			margin-top: 5px;
+			margin-bottom: 3px;
+			color: #FFFFFF;
 		}
-		#cowinLink1 {
-			color:blue;
+		.fieldLabel, .districtLevel {
+			color: #FFFFFF;
 		}
 		#stateSelectRadio, #pinSelectRadio {
 			margin: 0px 2px 0px 0px;
@@ -42,13 +56,24 @@
 			text-align-last:center;
 		}
 		.searchBtn {
-			background-color: #008CBA;
+			padding: 10px 23px;
+			font-size: 15px;
+			text-align: center;
 			cursor: pointer;
+			outline: none;
 			color: white;
+			background-color: #136FAD;
 			border: none;
-			font-size: 14px;
-			width:100px;
-			Height:25px
+			border-radius: 10px;
+			box-shadow: 3px 3px #999;
+		}
+
+		.searchBtn:hover {background-color: #2E86C1  }
+
+		.searchBtn:active {
+			background-color: #136FAD;
+			box-shadow: 1px 2px #666;
+			transform: translateY(4px);
 		}
 		#loader {
 			display: none;
@@ -59,7 +84,7 @@
 		.info {
 			margin-top:5px;
 			margin-bottom:0px;
-			color:#B40404;
+			color:#9CFAF6;
 		}
 		.districtLevel {
 			margin-left: 19px;
@@ -69,5 +94,23 @@
 			text-align: center;
 		}
 		#searchSection {
+			color:#FFFFFF;
 			text-align: center;
+		}
+		
+		a:link {
+		  color: red;
+		  background-color: transparent;
+		}
+		a:visited {
+		  color: red;
+		  background-color: transparent;
+		}
+		a:hover {
+		  color: #53FF33;
+		  background-color: transparent;
+		}
+		a:active {
+		  color: red;
+		  background-color: transparent;
 		}
